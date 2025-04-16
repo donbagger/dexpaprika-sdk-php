@@ -4,7 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use DexPaprika\Client;
 use DexPaprika\Exception\NotFoundException;
-use DexPaprika\Exceptions\DexPaprikaApiException;
+use DexPaprika\Exception\DexPaprikaApiException;
 
 /**
  * This example demonstrates various error handling approaches

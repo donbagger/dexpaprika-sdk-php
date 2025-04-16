@@ -9,6 +9,8 @@ A PHP SDK for interacting with the DexPaprika API, providing access to cryptocur
 - Query information about DEXes, liquidity pools, and tokens
 - Get detailed price information, trading volume, and transactions
 - Search across the entire DexPaprika ecosystem
+- Automatic retry with exponential backoff
+- Response caching with PSR-6 compatible interface
 - Parameter validation with clear error messages
 - Comprehensive documentation
 
@@ -70,15 +72,72 @@ use DexPaprika\Config;
 $config = new Config();
 $config->setResponseFormat('object') // Get responses as objects instead of arrays
        ->setTimeout(30)              // Set request timeout in seconds
-       ->setUserAgent('MyApp/1.0');  // Set custom user agent
+       ->setUserAgent('MyApp/1.0')   // Set custom user agent
+       ->setMaxRetries(3)            // Set maximum retry attempts
+       ->setRetryDelays([100, 500, 1000]); // Set retry delays in milliseconds
 
 // Create client with configuration
 $client = new Client($config);
 ```
 
+## Caching Responses
+
+The SDK provides built-in caching for API responses:
+
+```php
+<?php
+use DexPaprika\Client;
+use DexPaprika\Cache\FilesystemCache;
+
+// Enable caching with default settings (filesystem cache, 1 hour TTL)
+$client = new Client();
+$client->setupCache();
+
+// Custom cache TTL (5 minutes)
+$client->setupCache(null, 300);
+
+// Custom cache directory
+$customCache = new FilesystemCache('/path/to/cache');
+$client->setupCache($customCache);
+
+// Disable caching
+$client->getConfig()->setCacheEnabled(false);
+
+// Enable caching
+$client->getConfig()->setCacheEnabled(true);
+
+// Create a client with caching enabled from the beginning
+$config = new Config();
+$cache = new FilesystemCache();
+$config->setCache($cache)->setCacheEnabled(true);
+$client = new Client(null, null, false, $config);
+```
+
+## Automatic Retry
+
+The SDK automatically retries failed requests with exponential backoff:
+
+```php
+<?php
+use DexPaprika\Client;
+use DexPaprika\Config;
+
+// Configure retry behavior
+$config = new Config();
+$config->setMaxRetries(5); // Maximum number of retry attempts
+$config->setRetryDelays([100, 500, 1000, 2500, 5000]); // Delay in milliseconds for each attempt
+
+$client = new Client(null, null, false, $config);
+```
+
+Only certain types of failures will be retried:
+- Network connectivity issues
+- Server errors (5xx status codes)
+- Rate limiting (429 status codes)
+
 ## API Components
 
-The SDK provides the following API modules:
+This SDK provides the following API modules:
 
 ### Networks
 
@@ -176,12 +235,24 @@ The SDK throws different types of exceptions:
 ```php
 use DexPaprika\Exception\DexPaprikaApiException;
 use DexPaprika\Exception\NotFoundException;
+use DexPaprika\Exception\RateLimitException;
+use DexPaprika\Exception\ServerException;
+use DexPaprika\Exception\NetworkException;
 
 try {
     $token = $client->tokens->getTokenDetails('ethereum', '0x0000000000000000000000000000000000000000');
 } catch (NotFoundException $e) {
     // Handle not found error
     echo "Resource not found: " . $e->getMessage();
+} catch (RateLimitException $e) {
+    // Handle rate limiting
+    echo "Rate limit exceeded. Try again later.";
+} catch (ServerException $e) {
+    // Handle server errors
+    echo "Server error: " . $e->getMessage();
+} catch (NetworkException $e) {
+    // Handle network connectivity issues
+    echo "Network error: " . $e->getMessage();
 } catch (DexPaprikaApiException $e) {
     // Handle API errors
     echo "API Error: " . $e->getMessage() . " (Code: " . $e->getCode() . ")";
