@@ -78,7 +78,7 @@ $client = new Client($config);
 
 ## API Components
 
-The SDK provides the following API modules:
+This SDK provides the following API modules:
 
 ### Networks
 
