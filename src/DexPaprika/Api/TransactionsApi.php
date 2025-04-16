@@ -2,7 +2,6 @@
 
 namespace DexPaprika\Api;
 
-use DexPaprika\DexPaprikaClient;
 use DexPaprika\Utils\ResponseTransformer;
 
 class TransactionsApi extends BaseApi
@@ -108,14 +107,15 @@ class TransactionsApi extends BaseApi
                 'asObject' => $asObject
             ]);
             
-            $continueProcessing = $callback($response, $page);
             $totalPages++;
-            $page++;
             
-            // Check if we should continue processing
+            // Call the callback and check if we should continue
+            $continueProcessing = $callback($response, $page);
             if ($continueProcessing === false) {
-                break;
+                return $totalPages;
             }
+            
+            $page++;
             
             // Check if we've reached the maximum number of pages
             if ($maxPages > 0 && $page >= $maxPages) {

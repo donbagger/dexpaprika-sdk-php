@@ -3,7 +3,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use DexPaprika\Client;
-use DexPaprika\Exceptions\DexPaprikaApiException;
+use DexPaprika\Exception\DexPaprikaApiException;
 
 /**
  * This example demonstrates how to use the object transformation feature 

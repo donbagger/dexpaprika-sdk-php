@@ -3,7 +3,7 @@
 namespace DexPaprika\Tests;
 
 use DexPaprika\Api\UtilsApi;
-use DexPaprika\Exceptions\DexPaprikaApiException;
+use DexPaprika\Exception\DexPaprikaApiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;

@@ -2,7 +2,7 @@
 
 namespace DexPaprika\Api;
 
-use DexPaprika\Exceptions\DexPaprikaApiException;
+use DexPaprika\Exception\DexPaprikaApiException;
 
 class UtilsApi extends BaseApi
 {

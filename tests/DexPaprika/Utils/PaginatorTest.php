@@ -3,7 +3,7 @@
 namespace DexPaprika\Tests\Utils;
 
 use DexPaprika\Api\PoolsApi;
-use DexPaprika\Exceptions\DexPaprikaApiException;
+use DexPaprika\Exception\DexPaprikaApiException;
 use DexPaprika\Utils\Paginator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;

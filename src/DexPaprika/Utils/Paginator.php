@@ -2,7 +2,7 @@
 
 namespace DexPaprika\Utils;
 
-use DexPaprika\Exceptions\DexPaprikaApiException;
+use DexPaprika\Exception\DexPaprikaApiException;
 
 class Paginator
 {
